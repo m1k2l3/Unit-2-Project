@@ -1,8 +1,16 @@
 import java.util.Scanner;
+//Import libraries to create files
+import java.io.File;
+import java.io.IOException;//Needed whenever dealing with Files
+//import FileWriter
+import java.io.FileWriter;
+
 class Main {
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException{
     //Creates a scanner object that allows the users to input their values.
     Scanner input = new Scanner(System.in);
+    //Declares myFile as a file object
+    File myFile = new File("Order Information");
 
     //item represents the selection number of item the customer orders
     int item = 0;
@@ -14,12 +22,16 @@ class Main {
     int[][] info = {{0,5,0},{0,20,0},{0,12,0},{0,8,0},{0,50,0}};
     //name represents the uner's name in a string array
     String[] name;
-    //subtotal means the total amount of money the user spend before tax
-    double subtotal = 0;
+    //subtotal means the total amount of money the user spends before tax
+    double subtotal = 0;     
+
+    //Create new file if it doesn't already exist
+    myFile.createNewFile();
+
 
     System.out.println("Please enter your full name");
 
-    //Store the user's full name
+    //Stores the user's full name
     name = input.nextLine().split(" ");
     while(name.length < 2){
       System.out.println("Please enter your full name");
@@ -28,48 +40,53 @@ class Main {
 
     while(numOfSelections > -1 && numOfSelections < 5){
       item = -1;
+      
+      //Menu
+      System.out.printf("\nHello %s %s\n\nWhat would like to order?(%d of selections made)\nPlease enter the selection number\n\n1 - Apple  $5\n2 - Meat   $20\n3 - Sushi  $12\n4 - Hotdog $8\n5 - Pizza  $50\n\n0 - Finished Ordering\n\n",name[0],name[name.length-1],numOfSelections);
 
-      System.out.printf("\nHello %s %s\n\nWhat would like to order?(Enter the selection number)\n1 - Apple  $5\n2 - Meat   $20\n3 - Sushi  $12\n4 - Hotdog $8\n5 - Pizza  $50\n\n0 - Finished Ordering\n\n",name[0],name[name.length-1]);
-
-      System.out.printf("Please enter the selection number of the item you would like to order.If you enter the same section number in two different selections, the order finishes.You have to choose at least 1 item for ordering.(%d of selections made)\n\n",numOfSelections);
-
-      while(item < 0 || item > 5||(item == 0 && numOfSelections == 0)){
+      while(item < 0 || item > 5){
         try{
           item = Integer.parseInt(input.nextLine());
+          if(item > 0 && item < 6){
+            if(info[item - 1][0] > 0){
+              System.out.println("You can not order the same item twice.");
+              item = -1;
+            }
+          }else if(item < 0 || item > 5){
+              System.out.println("Please enter a valid number.");
+          }else if(numOfSelections == 0){
+              System.out.println("You have to choose at least 1 item for ordering.");
+          }
         }
         catch (Exception e){
-          System.out.println("Please enter a valid number");
+          System.out.println("Please enter a valid number.");
         }
       }
       
-      //If the user selects the same item twice or select all the item, the selection part exits
+      //If the user selects all the items, the selection part exits
       if(item == 0){
-        System.out.println("Order finished");
-        break;
-      }else if(info[item - 1][0] > 0){
-        System.out.println("Order finished");
+        System.out.println("Order finished.");
         break;
       }
 
-      System.out.printf("Please enter the amount of %s's you'd like to order(1-999)\n",item);
+      //Amount of items the user purchases
+      System.out.printf("Please enter the amount of %s's you'd like to order(1-999).\n",item);
       while(quantity == 0){
         try{
           quantity = Integer.parseInt(input.nextLine());
           info[item - 1][0] = quantity;
+          if(quantity > 999 || quantity < 1){
+            System.out.println("Please enter a valid number.");
+            quantity = 0;
+          }
         }
         catch (Exception e){
-          System.out.println("Please enter a valid number");
-        }
-        if(quantity > 999 || quantity < 1){
-          System.out.println("Number excceds the limit, please enter a number from 1-999");
-          quantity = 0;
+          System.out.println("Please enter a valid number.");
         }
       }
 
-      //The amount of money the user spend on one kind of items.
+      //The amount of money the user spends on one kind of item.
       info[item - 1][2] = quantity * info[item - 1][1];
-
-      //System.out.println(info[numOfSelections - 1][0] + " " + info[numOfSelections - 1][1] + " " + info[numOfSelections - 1][2]);
 
       clearScreen();
       quantity = 0;
@@ -79,7 +96,8 @@ class Main {
     
     clearScreen();
 
-    //Print out the output
+    //Prints out the output
+    System.out.printf("Order finished\nFirst Name: %s\nLast Name: %s\n\n         quantity  price($)  subtotal($)",name[0],name[name.length-1]);
     output(numOfSelections,info);
 
     System.out.printf("\n\nThe subtotal is $%.2f\nThe total is $%.2f",subtotal,tax(subtotal));
@@ -94,10 +112,13 @@ class Main {
     System.out.flush();  
   }
 
-  public static void output(int numOfSelections, int[][] info){
-    System.out.printf("Order finished\nFirst Name: %s\nLast Name: %s\n\n         quantity  price($)  subtotal($)",name[0],name[name.length-1]);
+  public static void output(int numOfSelections, int[][] info) throws IOException{
+    //File writer;
+    FileWriter myWriter = new FileWriter("Order Information");
+    //Identifies the products the user purchased
     for(int i = 0; i < numOfSelections; i++){
       System.out.println();
+      myWriter.write("\n");
       if(info[i][2] != 0){
         switch(info[i][1]){
           case 5:
@@ -117,7 +138,8 @@ class Main {
             break;
         }
         for(int j = 0; j < 3; j++){
-          //Align the output 
+          //Aligns the output and stores the information into file
+          myWriter.write(info[i][j] + " ");
           if(info[i][j] < 10){ 
             System.out.print("         " + info[i][j]);
           }else if(info[i][j] < 100){
@@ -132,5 +154,7 @@ class Main {
         }
       }
     }
+    //Closes the file
+    myWriter.close();
   }
 }
