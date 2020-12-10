@@ -17,7 +17,7 @@ class Main {
     //numOfSelections represents number of selections the customer made
     int numOfSelections = 0;
     //Creates a 2D array to store the quantity, price and subtotal cost
-    int[][] info = {{0,5,0},{0,20,0},{0,12,0},{0,8,0},{0,50,0}};
+    int[][] info = {{0,5,0},{0,8,0},{0,20,0},{0,50,0},{0,12,0}};
     //name represents the uner's name in a string array
     String[] name;
     //subtotal means the total amount of money the user spends before tax
@@ -41,7 +41,7 @@ class Main {
     while(numOfSelections < 5){
       
       //Menu
-      System.out.printf("\nHello %s %s\n\nWhat would you like to order?(%d of selections have made)\nPlease enter the selection number\n\n1 - Apple  $5\n2 - Meat   $20\n3 - Sushi  $12\n4 - Hotdog $8\n5 - Pizza  $50\n\n0 - Finished Ordering\n\n",name[0],name[name.length-1],numOfSelections);
+      System.out.printf("\nHello %s %s\n\nWhat would you like to order?(%d of selections have made)\nPlease enter the selection number\n\n1 - Apple  $5\n2 - Hotdog $20\n3 - Meat   $20\n4 - Pizza  $50\n5 - Sushi  $12\n\n0 - Finished Ordering\n\n",name[0],name[name.length-1],numOfSelections);
 
       while(item < 0 || item > 5){
         try{
@@ -121,6 +121,7 @@ class Main {
     for(int i = 0; i < numOfSelections; i++){
       System.out.println();
       myWriter.write("\n");
+      //Detects if the customer has purchased the items
       if(info[i][2] != 0){
         switch(info[i][1]){
           case 5:
